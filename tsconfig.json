@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "CommonJS",
+    "declaration": true,
+    "strict": true,
+    "lib": ["es2015", "DOM"],
+    "outDir": "lib"
+  },
+  "include": [
+    "./src/index.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+}
