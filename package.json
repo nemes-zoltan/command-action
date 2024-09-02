@@ -5,15 +5,10 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "rm -rf ./lib && tsc",
-    "demo": "ts-node ./demos/index.ts"
+    "demo": "tsx ./demos/index.ts"
   },
   "directories": {
     "lib": "lib"
-  },
-  "devDependencies": {
-    "@types/node": "^18.15.11",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.0.3"
   },
   "repository": {
     "type": "git",
@@ -30,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/nemes-zoltan/command-action/issues"
   },
-  "homepage": "https://github.com/nemes-zoltan/command-action#readme"
+  "homepage": "https://github.com/nemes-zoltan/command-action#readme",
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
 }

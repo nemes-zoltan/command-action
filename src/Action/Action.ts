@@ -36,6 +36,7 @@ abstract class Action<Props extends PropsType = {}, Result extends Props = Props
   protected async exec(): Promise<void> {
     this.hook = new Hook(this.beforeHooks, this.afterHooks)
     try {
+      await Command._runMiddlewares(this, this.context)
       await this.hook.runBeforeHooks()
       await this.run()
       await this.hook.runAfterHooks()

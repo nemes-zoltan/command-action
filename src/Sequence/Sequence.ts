@@ -1,7 +1,8 @@
 import { ContextClass } from '../Context'
+import { Command } from '../instance'
 import { ActionClass, ActionMethod, Context, PropsType } from '../types'
 
-class Sequence<Props extends PropsType, Result extends Props = Props> {
+class Sequence<Props extends PropsType = PropsType, Result extends Props = Props> {
   protected actions: ActionClass[] = []
   public skip: boolean = false
 
@@ -18,6 +19,7 @@ class Sequence<Props extends PropsType, Result extends Props = Props> {
   private async run(context: Context<Props> | Props): Promise<Context<Result>> {
     context = ContextClass.build<Props>(context)
     context._setSequence(this)
+    await Command._runMiddlewares(this, context as Context<PropsType>)
     for (let action of this.actions) {
       context = await action.run(context)
       if (context.isFailure() || this.skip) {

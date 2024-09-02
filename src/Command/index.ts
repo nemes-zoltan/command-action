@@ -1,10 +1,19 @@
+import { Action } from '../Action'
+import { Sequence } from '../Sequence'
 import { ActionMethod, CommandActionConfig, Context, PropsType } from '../types'
+
+export type Middleware = (action: Action | Sequence, context: Context<PropsType>, provider: PropsType | null) => Promise<void>
 
 class Command {
   private static command: Command | null = null
   public provider: PropsType | null = null
   public config: CommandActionConfig = {
     defaultForceFailures: false
+  }
+  private middlewares: Middleware[] = []
+
+  public registerMiddleware(middleware: Middleware) {
+    this.middlewares.push(middleware)
   }
 
   public static instance() {
@@ -32,6 +41,12 @@ class Command {
     this.provider = null
 
     return context as Context<Result>
+  }
+
+  public async _runMiddlewares(action: Action | Sequence, context: Context<PropsType>) {
+    for (const middleware of this.middlewares) {
+      await middleware(action, context, this.provider)
+    }
   }
 }
 
