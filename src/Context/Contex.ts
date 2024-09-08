@@ -55,7 +55,7 @@ class Context<Props extends PropsType> {
       force,
       extras: rest
     }
-    
+   
     if (force) {
       throw new ForcedActionError<Props>(this)
     }
@@ -88,6 +88,12 @@ class Context<Props extends PropsType> {
     return true
   }
 
+  public toJSON() {
+    const { _actions, _rolledback, _sequence, _executed, ...rest } = this
+
+    return rest
+  }
+
   private _setSequence(sequence: Sequence<Props>) {
     this._sequence = sequence
   }
@@ -98,4 +104,3 @@ class Context<Props extends PropsType> {
 }
 
 export default Context
-

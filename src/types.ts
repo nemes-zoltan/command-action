@@ -7,15 +7,18 @@ export type ActionHook = () => void
 export type ActionMethod<Props extends PropsType, Result extends Props = Props> =
   (context: Props) => Promise<Context<Result> & Result>
 
-export type Context<Props extends PropsType> = 
+
+export type Context<Props extends PropsType> =
   Omit<ContextClass<Props>,  '_executed' | '_rollback' | '_sequence'> & Props & Record<string, any>
+
 
 export type ActionInstance = {
   rollback(): Promise<void> | void
-}  
+}
 
 export type ActionClass = {
-  run: <Props extends PropsType, Result extends Props = Props>(context: Context<Props> | Props) => Promise<Context<Result>>
+  // run: <Props extends PropsType, Result extends Props = Props>(context: Context<Props> | Props) => Promise<Context<Result>>
+  run: <C extends new (...args: any) => any>(param: ConstructorParameters<C>[0]) => Promise<InstanceType<C>['context']>
 }
 
 export enum FailureType {

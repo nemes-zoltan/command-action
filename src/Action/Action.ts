@@ -5,27 +5,35 @@ import { ActionInstance, Context, PropsType, ActionMethod, ActionHook } from '..
 import { ForcedActionError, InternalActionError, SkipActionAndSequenceError } from '../Errors'
 
 abstract class Action<Props extends PropsType = {}, Result extends Props = Props, Provider extends PropsType = {}> implements ActionInstance {  
-  protected context!: Context<Props & Result>
+  public context!: Context<Props & Result>
   protected readonly provider!: Provider
   protected beforeHooks: ActionHook[] = []
   protected afterHooks: ActionHook[] = []
   private _context!: ContextClass<Props> & Props
   private hook!: Hook
 
-  protected constructor(context: Context<Props> | Props, provider: Provider) {
+  constructor(context: Props, provider: Provider) {
     this._context = ContextClass.build<Props>(context)
     this.context = this._context as unknown as Context<Props & Result>
     this.provider = Object.freeze(provider)
   }
 
-  public static async run<Props extends PropsType = {}, Result extends Props = Props>(context: Props) {
-    const Klass: any = this
-    const action: Action<Props, Result> = new Klass(context, Command.provider)
+  // public static async run<Props extends PropsType = {}, Result extends Props = Props>(context: Props) {
+  //   const Klass: any = this
+  //   const action: Action<Props, Result> = new Klass(context, Command.provider)
+  //   await action.exec()
+  //   return action.context as Context<Result>
+  // }
+
+
+  public static async run<C extends new (...args: any) => Action>(param: ConstructorParameters<C>[0]): Promise<InstanceType<C>['context']> {
+    const action = new (this as unknown as C)(param, Command.provider) as InstanceType<C>
     await action.exec()
-    return action.context as Context<Result>
+    return action.context
   }
 
   public static method<Props extends PropsType = {}, Result extends Props = Props>(): ActionMethod<Props, Result> {
+    // @ts-ignore
     return this.run.bind(this)
   }
 
@@ -50,7 +58,7 @@ abstract class Action<Props extends PropsType = {}, Result extends Props = Props
       if (error instanceof ContextClass) {
         return
       }
-      
+     
       if (error instanceof ForcedActionError) {
         throw error
       }
@@ -61,4 +69,3 @@ abstract class Action<Props extends PropsType = {}, Result extends Props = Props
 }
 
 export default Action
-
